@@ -72,7 +72,7 @@ git clone https://github.com/mahw472/blend-downgrade.git
 
 ## 许可
 
-插件源码（`src/`、`tools/`）以 **GPL-3.0-or-later** 发布，见 [LICENSE](LICENSE) ——
+插件源码（`src/`）以 **GPL-3.0-or-later** 发布，见 [LICENSE](LICENSE) ——
 这与 Blender 插件生态保持一致。
 
 `bin/` 下的转换器（`mxmodelopt.exe` 及其 DLL）是**专有组件**，不属于本仓库源码，
