@@ -57,6 +57,17 @@ A：目前输出固定为 2.83 格式（2.83 是 2.8x 系列里最新的 LTS，�
 **Q：macOS / Linux 能用吗？**
 A：暂时不行，内置转换器是 Windows 程序。理论上可以用 WINE 或被其他平台的原生构建替换，欢迎 PR。
 
+**Q：装的时候 Windows 提示「未知发布者」，或者杀毒软件报警、删掉文件？**
+A：这是**未签名程序**的常见现象，和插件本身无关。转换器 `bin/mxmodelopt.exe` 没有购买代码签名证书，所以 Windows SmartScreen 会弹「未知发布者」；部分杀毒软件对「从网上下载的、没有签名的、会读写文件的 exe」也会误判。
+
+处理办法：
+
+- SmartScreen 弹窗 → 点「更多信息」→「仍要运行」
+- 若杀毒软件把 `mxmodelopt.exe` 隔离了 → 从隔离区恢复，并把插件目录（`scripts/addons/blend_downgrade/`）加入白名单
+- 仍不放心 → 在虚拟机或沙箱里先跑一遍
+
+如果被拦截后插件报「找不到转换器」，在插件偏好设置里手动指向恢复出来的 `mxmodelopt.exe` 即可。
+
 ## 开发调试
 
 把插件源码目录放进 Blender 的 addons 目录即可（用软链接更方便，改完重载插件就生效）：
@@ -101,6 +112,10 @@ or newer — installed in the **older** Blender you want to open the file with.
 **Install:** grab `blend_downgrade-<version>.zip` from [Releases](../../releases), then
 `Edit → Preferences → Add-ons → Install from File...`. The button shows up at the top-right
 of the 3D Viewport header.
+
+> **Windows may warn about the converter.** `bin/mxmodelopt.exe` is unsigned, so SmartScreen
+> shows an "unknown publisher" prompt — click *More info → Run anyway*. Some antivirus tools
+> may also quarantine it; restore it from quarantine and whitelist the add-on folder.
 
 **Development:** drop `src/blend_downgrade` into Blender's `scripts/addons/`. The converter is a
 proprietary binary shipped only with official packages; point `MXPAI_MXMODELOPT_DIR` at it to test.
