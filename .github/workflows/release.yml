@@ -1,0 +1,41 @@
+name: release
+
+# 打 tag（形如 v1.0.0）时触发。
+# 安装包内需包含转换器二进制，而它由私有工程编译产出、公开 CI 无法构建，
+# 因此这里只做校验并建草稿 Release，安装包由维护者用内部打包脚本生成后手动上传。
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 tag 与 bl_info 版本是否一致
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VER="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*(\([0-9]*\),[[:space:]]*\([0-9]*\),[[:space:]]*\([0-9]*\)).*/\1.\2.\3/p' src/blend_downgrade/__init__.py)"
+          echo "tag=$TAG  bl_info=$VER"
+          if [ "$TAG" != "$VER" ]; then
+            echo "::error::tag 是 $TAG，但 bl_info 里写的是 $VER，请先改成一致"
+            exit 1
+          fi
+
+      - name: 语法检查
+        run: python3 -m compileall -q src
+
+      - name: 创建草稿 Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --draft \
+            --title "Blend 版本转换器 $GITHUB_REF_NAME" \
+            --notes "安装包由内部打包脚本生成后作为附件上传（CI 无法构建专有转换器）。"

@@ -1,0 +1,16 @@
+# 打包产物
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 转换器二进制不进仓库，随 Release 附件分发
+src/blend_downgrade/bin/
+
+# 其它
+*.zip
+.vscode/
+.idea/
+.DS_Store
